@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Password Strength Check</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Password Strength Checker and Generator</h2>
+        <div class="inputbox">
+            <input type="password" placeholder="Enter password" id="MyPassword">
+            <div class="show" onclick="togglePassword()"></div>
+        </div>
+        <div class="strengthmeter"></div>
+        <p class="strength-text" id="strengthText"></p>
+        <h3>Need a secure password?</h3>
+        <button class="generate-btn" onclick="generatePassword()">Generate Password</button>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('MyPassword');
+        const container = document.querySelector('.container');
+        const strengthText = document.getElementById('strengthText');
+
+        passwordInput.addEventListener("keyup", () => {
+            const password = passwordInput.value;
+            const strength = calculateStrength(password);
+
+            container.classList.remove('weak', 'medium', 'strong');
+
+            if (strength <= 2) {
+                container.classList.add('weak');
+                strengthText.textContent = "Password is weak";
+                strengthText.style.color = "red";
+            } else if (strength <= 4) {
+                container.classList.add('medium');
+                strengthText.textContent = "Password is medium";
+                strengthText.style.color = "orange";
+            } else {
+                container.classList.add('strong');
+                strengthText.textContent = "Password is strong";
+                strengthText.style.color = "lime";
+            }
+        });
+
+        function calculateStrength(password) {
+            let score = 0;
+            if (password.length > 6) score++;
+            if (password.length >= 10) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++; // special char
+            return score;
+        }
+
+        function togglePassword() {
+            const show = document.querySelector('.show');
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                show.classList.add('hide');
+            } else {
+                passwordInput.type = "password";
+                show.classList.remove('hide');
+            }
+        }
+
+        function generatePassword(length = 12) {
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            passwordInput.value = password;
+            passwordInput.type = "text";
+            document.querySelector('.show').classList.add('hide');
+            passwordInput.dispatchEvent(new Event("keyup"));
+        }
+    </script>
+</body>
+</html>
